@@ -1,0 +1,66 @@
+
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+import json
+import os
+
+app = Flask(__name__)
+CORS(app)
+
+# Simple file-based storage
+TEAMS_FILE = 'teams.json'
+MEMBERS_FILE = 'members.json'
+
+def load_data(filename):
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_data(data, filename):
+    with open(filename, 'w') as f:
+        json.dump(data, f)
+
+@app.route('/api/teams', methods=['POST'])
+def create_team():
+    teams = load_data(TEAMS_FILE)
+    data = request.json
+    team_code = f"TEAM{len(teams) + 1}"
+    teams[team_code] = {
+        'name': data['teamName'],
+        'description': data['teamDescription'],
+        'category': data['teamCategory']
+    }
+    save_data(teams, TEAMS_FILE)
+    return jsonify({'code': team_code})
+
+@app.route('/api/teams/join', methods=['POST'])
+def join_team():
+    members = load_data(MEMBERS_FILE)
+    data = request.json
+    team_code = data['teamCode']
+    teams = load_data(TEAMS_FILE)
+    
+    if team_code not in teams:
+        return jsonify({'error': 'Invalid team code'}), 404
+        
+    if team_code not in members:
+        members[team_code] = []
+    members[team_code].append(data['username'])
+    save_data(members, MEMBERS_FILE)
+    return jsonify({'message': 'Joined successfully'})
+
+@app.route('/api/teams/<team_code>')
+def get_team(team_code):
+    teams = load_data(TEAMS_FILE)
+    members = load_data(MEMBERS_FILE)
+    
+    if team_code not in teams:
+        return jsonify({'error': 'Team not found'}), 404
+        
+    team_data = teams[team_code]
+    team_data['members'] = members.get(team_code, [])
+    return jsonify(team_data)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=3000)

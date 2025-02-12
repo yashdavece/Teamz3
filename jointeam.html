@@ -158,13 +158,37 @@
     </div>
 
     <script>
-        function joinTeam() {
+        async function joinTeam() {
             const teamCode = document.getElementById('teamCode').value;
-            if (teamCode) {
-                alert('Successfully joined team with code: ' + teamCode);
-                // Redirect to team dashboard or another relevant page
-            } else {
+            if (!teamCode) {
                 alert('Please enter a team code.');
+                return;
+            }
+
+            try {
+                const username = prompt('Enter your username:');
+                if (!username) return;
+
+                const response = await fetch('/api/teams/join', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        teamCode: teamCode,
+                        username: username
+                    })
+                });
+
+                if (response.ok) {
+                    window.location.href = `dashboard.html?team=${teamCode}`;
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Error joining team');
+                }
+            } catch (error) {
+                console.error('Error joining team:', error);
+                alert('Error joining team. Please try again.');
             }
         }
     </script>

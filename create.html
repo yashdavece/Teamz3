@@ -217,6 +217,7 @@
         <nav>
             <a href="index.html" class="nav-button">Home</a>
             <a href="about.html" class="nav-button">About</a>
+            <a href="dashboard.html" class="nav-button">Dashboard</a>
         </nav>
     </header>
 
@@ -255,8 +256,6 @@
     </div>
 
     <script>
-        // JavaScript for form functionality
-        const teamForm = document.getElementById('teamForm');
         const teamLogoInput = document.getElementById('teamLogo');
         const logoPreview = document.getElementById('logoPreview');
 
@@ -272,12 +271,55 @@
             }
         });
 
-        teamForm.addEventListener('submit', function(event) {
+        async function handleSubmit(event) {
             event.preventDefault();
-            alert('Team created successfully!');
-            teamForm.reset();
-            logoPreview.style.display = 'none';
-        });
+            const formData = {
+                teamName: document.getElementById('teamName').value,
+                teamDescription: document.getElementById('teamDescription').value,
+                teamCategory: document.getElementById('teamCategory').value
+            };
+
+            try {
+                const response = await fetch('/api/teams', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                alert(`Team created successfully! Your team code is: ${data.code}`);
+                window.location.href = `dashboard.html?team=${data.code}`;
+            } catch (error) {
+                console.error('Error creating team:', error);
+                alert('Error creating team. Please try again.');
+            }
+        }
+
+        document.getElementById('teamForm').addEventListener('submit', handleSubmit);
     </script>
 </body>
 </html>
+
+```
+
+```python
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+teams = {}
+next_team_code = 1
+
+@app.route('/api/teams', methods=['POST'])
+def create_team():
+    global next_team_code
+    data = request.get_json()
+    team_code = str(next_team_code)
+    next_team_code += 1
+    teams[team_code] = data
+    return jsonify({'code': team_code})
+
+if __name__ == '__main__':
+    app.run(debug=True)
