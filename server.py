@@ -41,10 +41,37 @@ def create_team():
     teams[team_code] = {
         'name': data['teamName'],
         'description': data['teamDescription'],
-        'category': data['teamCategory']
+        'category': data['teamCategory'],
+        'leader': data['username']
     }
+    members = load_data(MEMBERS_FILE)
+    members[team_code] = [data['username']]
     save_data(teams, TEAMS_FILE)
+    save_data(members, MEMBERS_FILE)
     return jsonify({'code': team_code})
+
+@app.route('/api/teams/leader', methods=['POST'])
+def change_leader():
+    data = request.json
+    team_code = data['teamCode']
+    new_leader = data['newLeader']
+    current_user = data['currentUser']
+    
+    teams = load_data(TEAMS_FILE)
+    members = load_data(MEMBERS_FILE)
+    
+    if team_code not in teams or team_code not in members:
+        return jsonify({'error': 'Team not found'}), 404
+        
+    if teams[team_code]['leader'] != current_user:
+        return jsonify({'error': 'Only the team leader can change leadership'}), 403
+        
+    if new_leader not in members[team_code]:
+        return jsonify({'error': 'New leader must be a team member'}), 400
+        
+    teams[team_code]['leader'] = new_leader
+    save_data(teams, TEAMS_FILE)
+    return jsonify({'message': 'Leadership transferred successfully'})
 
 @app.route('/api/teams/join', methods=['POST'])
 def join_team():

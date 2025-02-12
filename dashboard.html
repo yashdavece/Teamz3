@@ -127,10 +127,24 @@
                 const response = await fetch(`/api/teams/${teamCode}`);
                 const data = await response.json();
 
+                const username = localStorage.getItem('username');
+                const isLeader = data.leader === username;
+                
                 document.getElementById('teamDetails').innerHTML = `
                     <h3>${data.name}</h3>
                     <p>${data.description}</p>
                     <p>Category: ${data.category}</p>
+                    <p>Team Leader: ${data.leader}</p>
+                    ${isLeader ? `
+                        <div style="margin-top: 15px;">
+                            <select id="newLeader">
+                                ${data.members.map(member => `
+                                    <option value="${member}">${member}</option>
+                                `).join('')}
+                            </select>
+                            <button onclick="changeLeader()" class="nav-button">Transfer Leadership</button>
+                        </div>
+                    ` : ''}
                 `;
 
                 const memberList = document.getElementById('memberList');
@@ -149,6 +163,38 @@
             const urlParams = new URLSearchParams(window.location.search);
             const teamCode = urlParams.get('team');
             window.location.href = `team_interface.html?team=${teamCode}`;
+        }
+
+        async function changeLeader() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const teamCode = urlParams.get('team');
+            const newLeader = document.getElementById('newLeader').value;
+            const currentUser = localStorage.getItem('username');
+
+            try {
+                const response = await fetch('/api/teams/leader', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        teamCode: teamCode,
+                        newLeader: newLeader,
+                        currentUser: currentUser
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Leadership transferred successfully');
+                    loadTeamData();
+                } else {
+                    alert(data.error || 'Error transferring leadership');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error transferring leadership');
+            }
         }
 
         loadTeamData();

@@ -273,10 +273,14 @@
 
         async function handleSubmit(event) {
             event.preventDefault();
+            const username = prompt('Enter your username (as team leader):');
+            if (!username) return;
+            
             const formData = {
                 teamName: document.getElementById('teamName').value,
                 teamDescription: document.getElementById('teamDescription').value,
-                teamCategory: document.getElementById('teamCategory').value
+                teamCategory: document.getElementById('teamCategory').value,
+                username: username
             };
 
             try {
