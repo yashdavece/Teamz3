@@ -105,6 +105,15 @@ def save_data(data, filename):
 
 @app.route('/')
 def serve_index():
+    try:
+        msg = Message('Test Email from TeamZ',
+                     sender=app.config['MAIL_USERNAME'],
+                     recipients=['nitya20005@gmail.com'])
+        msg.body = "This is a test email to verify the email configuration is working."
+        mail.send(msg)
+        print("Test email sent successfully!")
+    except Exception as e:
+        print("Error sending test email:", str(e))
     return send_from_directory('.', 'index.html')
 
 @app.route('/<path:path>')
