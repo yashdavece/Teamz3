@@ -293,8 +293,8 @@
                 });
 
                 const data = await response.json();
-                alert(`Team created successfully! Your team code is: ${data.code}`);
-                window.location.href = `dashboard.html?team=${data.code}`;
+                localStorage.setItem('username', username);
+                window.location.href = `team_interface.html?team=${data.code}`;
             } catch (error) {
                 console.error('Error creating team:', error);
                 alert('Error creating team. Please try again.');
