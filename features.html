@@ -12,79 +12,197 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
         }
 
         body {
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
             min-height: 100vh;
             background-image: url('bgimage.jpg');
             background-size: cover;
-            color: white;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         header {
-            background: rgba(0,0,0,0.8);
-            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px 30px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #f0f0f0;
+        }
+
+        .fa-users {
+            font-size: 2.5rem;
+            color: #f0f0f0;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-button {
+            background-color: transparent;
+            border: 2px solid transparent;
+            border-radius: 25px;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s, border-color 0.3s;
+            text-transform: uppercase;
+        }
+
+        .nav-button:hover {
+            background-color: #f0f0f0;
+            color: #111;
+            border-color: #f0f0f0;
+        }
+
+        .content-section {
+            padding: 120px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 2rem auto;
+            margin-top: 2rem;
         }
 
         .feature-card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.7);
             padding: 2rem;
-            border-radius: 1rem;
+            border-radius: 15px;
             text-align: center;
-            transition: transform 0.3s;
+            transition: transform 0.3s ease;
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
         }
 
         .feature-icon {
-            font-size: 2.5rem;
+            font-size: 3rem;
+            color: #f0f0f0;
             margin-bottom: 1rem;
-            color: #4CAF50;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #f0f0f0;
+        }
+
+        .feature-description {
+            color: #f0f0f0;
+            line-height: 1.6;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #f0f0f0;
+        }
+
+        .section-description {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            color: #f0f0f0;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .feature-card {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <header>
+        <div class="logo-title">
+            <i class="fas fa-users"></i>
+            <h1>TeamZ</h1>
+        </div>
         <nav>
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
-            <a href="login.html">Login</a>
+            <a href="index.html" class="nav-button">Home</a>
+            <a href="create.html" class="nav-button">Create Team</a>
+            <a href="jointeam.html" class="nav-button">Join Team</a>
+            <a href="about.html" class="nav-button">About</a>
         </nav>
     </header>
-    
-    <div class="features-grid">
-        <div class="feature-card">
-            <i class="fas fa-comments feature-icon"></i>
-            <h3>Real-time Chat</h3>
-            <p>Instant communication with team members</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-users feature-icon"></i>
-            <h3>Team Collaboration</h3>
-            <p>Work together seamlessly</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-book feature-icon"></i>
-            <h3>Learning Resources</h3>
-            <p>Share and access educational materials</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-tasks feature-icon"></i>
-            <h3>Task Management</h3>
-            <p>Organize and track team tasks</p>
+
+    <div class="content-section">
+        <h1 class="section-title">Our Features</h1>
+        <p class="section-description">Discover the powerful tools and features that make TeamZ the ultimate platform for team collaboration and productivity.</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-comments feature-icon"></i>
+                <h3 class="feature-title">Real-time Chat</h3>
+                <p class="feature-description">Communicate instantly with team members through our seamless chat system.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-tasks feature-icon"></i>
+                <h3 class="feature-title">Task Management</h3>
+                <p class="feature-description">Organize and track team tasks efficiently with our intuitive task management system.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-cloud-upload-alt feature-icon"></i>
+                <h3 class="feature-title">File Sharing</h3>
+                <p class="feature-description">Share and manage files easily with unlimited storage for all your team's needs.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-users-cog feature-icon"></i>
+                <h3 class="feature-title">Team Management</h3>
+                <p class="feature-description">Manage your team efficiently with role-based access control and permissions.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-video feature-icon"></i>
+                <h3 class="feature-title">Resource Sharing</h3>
+                <p class="feature-description">Share educational resources, including videos and documentation, with your team.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-chart-line feature-icon"></i>
+                <h3 class="feature-title">Progress Tracking</h3>
+                <p class="feature-description">Monitor team progress and performance with detailed analytics and reports.</p>
+            </div>
         </div>
     </div>
 </body>
