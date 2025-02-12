@@ -82,8 +82,9 @@ def login():
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.getenv('GMAIL_USER')
+app.config['MAIL_USERNAME'] = 'nitya20005@gmail.com'
 app.config['MAIL_PASSWORD'] = os.getenv('GMAIL_APP_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = 'nitya20005@gmail.com'
 mail = Mail(app)
 
 # File storage
