@@ -210,6 +210,20 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
+        .chat-input button {
+            padding: 6px 12px;
+            min-width: 40px;
+            width: 45px;
+            height: 38px; /* Match the input field height */
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+#send{
+   
+    height:38px;
+}
     </style>
 </head>
 <body>
@@ -239,7 +253,9 @@
                         <div class="chat-messages" id="chat-messages"></div>
                         <div class="chat-input">
                             <input type="text" id="message-input" placeholder="Type your message...">
-                            <button onclick="sendMessage()" class="nav-button">Send</button>
+                            <button onclick="sendMessage()" class="nav-button" id="send" style="height: 50px;
+                                width: 88px;
+                                margin-top: 10px;">Send</button>
                         </div>
                     </div>
                 </div>
