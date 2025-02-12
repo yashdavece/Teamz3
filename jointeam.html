@@ -166,25 +166,35 @@
             }
 
             try {
-                const username = prompt('Enter your username:');
-                if (!username) return;
+                let username;
+                let validUsername = false;
+                
+                while (!validUsername) {
+                    username = prompt('Enter your username:');
+                    if (!username) return;
+                    
+                    const response = await fetch('/api/teams/join', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            teamCode: teamCode,
+                            username: username
+                        })
+                    });
 
-                const response = await fetch('/api/teams/join', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        teamCode: teamCode,
-                        username: username
-                    })
-                });
-
-                if (response.ok) {
-                    window.location.href = `dashboard.html?team=${teamCode}`;
-                } else {
-                    const data = await response.json();
-                    alert(data.error || 'Error joining team');
+                    if (response.ok) {
+                        localStorage.setItem('username', username);
+                        window.location.href = `dashboard.html?team=${teamCode}`;
+                        validUsername = true;
+                    } else {
+                        const data = await response.json();
+                        alert(data.error || 'Error joining team');
+                        if (!data.error.includes('Username already exists')) {
+                            return;
+                        }
+                    }
                 }
             } catch (error) {
                 console.error('Error joining team:', error);

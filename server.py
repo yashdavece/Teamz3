@@ -51,14 +51,20 @@ def join_team():
     members = load_data(MEMBERS_FILE)
     data = request.json
     team_code = data['teamCode']
+    username = data['username']
     teams = load_data(TEAMS_FILE)
     
     if team_code not in teams:
         return jsonify({'error': 'Invalid team code'}), 404
-        
+    
     if team_code not in members:
         members[team_code] = []
-    members[team_code].append(data['username'])
+    
+    # Check if username already exists in the team
+    if username in members[team_code]:
+        return jsonify({'error': 'Username already exists in this team. Please choose a different username.'}), 400
+    
+    members[team_code].append(username)
     save_data(members, MEMBERS_FILE)
     return jsonify({'message': 'Joined successfully'})
 
