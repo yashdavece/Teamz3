@@ -152,53 +152,50 @@
         <hr>
         <div class="form-container">
             <h2>Join a Team</h2>
-            <input type="text" id="teamCode" placeholder="Enter your team code">
+            <input type="text" id="teamCode" placeholder="Enter your team code" required>
+            <input type="text" id="username" placeholder="Choose your username" required>
             <button onclick="joinTeam()">Join Team</button>
+            <p id="error-message" style="color: #ff4747; margin-top: 10px; display: none;"></p>
         </div>
     </div>
 
     <script>
         async function joinTeam() {
             const teamCode = document.getElementById('teamCode').value;
-            if (!teamCode) {
-                alert('Please enter a team code.');
+            const username = document.getElementById('username').value;
+            const errorMessage = document.getElementById('error-message');
+            
+            if (!teamCode || !username) {
+                errorMessage.textContent = 'Please fill in all fields';
+                errorMessage.style.display = 'block';
                 return;
             }
 
             try {
-                let username;
-                let validUsername = false;
-                
-                while (!validUsername) {
-                    username = prompt('Enter your username:');
-                    if (!username) return;
-                    
-                    const response = await fetch('/api/teams/join', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            teamCode: teamCode,
-                            username: username
-                        })
-                    });
+                const response = await fetch('/api/teams/join', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        teamCode: teamCode,
+                        username: username
+                    })
+                });
 
-                    if (response.ok) {
-                        localStorage.setItem('username', username);
-                        window.location.href = `dashboard.html?team=${teamCode}`;
-                        validUsername = true;
-                    } else {
-                        const data = await response.json();
-                        alert(data.error || 'Error joining team');
-                        if (!data.error.includes('Username already exists')) {
-                            return;
-                        }
-                    }
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('username', username);
+                    window.location.href = `dashboard.html?team=${teamCode}`;
+                } else {
+                    errorMessage.textContent = data.error || 'Error joining team';
+                    errorMessage.style.display = 'block';
                 }
             } catch (error) {
                 console.error('Error joining team:', error);
-                alert('Error joining team. Please try again.');
+                errorMessage.textContent = 'Error joining team. Please try again.';
+                errorMessage.style.display = 'block';
             }
         }
     </script>
