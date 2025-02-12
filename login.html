@@ -54,9 +54,6 @@
             opacity: 0.9;
         }
 
-        .auth-button.google { background: #DB4437; }
-        .auth-button.github { background: #333; }
-
         .input-group {
             margin: 1rem 0;
             text-align: left;
@@ -77,12 +74,18 @@
             margin-top: 0.5rem;
             display: none;
         }
+
+        .success-message {
+            color: #4CAF50;
+            margin-top: 0.5rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="auth-container">
-        <h2>Welcome to TeamZ</h2>
-        <form id="loginForm" onsubmit="handleLogin(event)">
+        <h2 id="authTitle">Welcome to TeamZ</h2>
+        <div id="loginForm">
             <div class="input-group">
                 <label>Email</label>
                 <input type="email" id="email" required placeholder="Enter your email">
@@ -92,33 +95,37 @@
                 <input type="password" id="password" required placeholder="Enter your password">
             </div>
             <div id="errorMessage" class="error-message"></div>
-            <button type="submit" class="auth-button">
+            <div id="successMessage" class="success-message"></div>
+            <button onclick="handleLogin()" class="auth-button">
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
-        </form>
-        <button onclick="handleGoogleLogin()" class="auth-button google">
-            <i class="fab fa-google"></i> Continue with Google
-        </button>
-        <button onclick="handleGithubLogin()" class="auth-button github">
-            <i class="fab fa-github"></i> Continue with GitHub
-        </button>
-        <p style="margin-top: 1rem">
-            Don't have an account? <a href="#" onclick="showSignup()" style="color: #4CAF50">Sign Up</a>
-        </p>
+            <p style="margin-top: 1rem">
+                Don't have an account? <a href="#" onclick="toggleForm()" style="color: #4CAF50">Sign Up</a>
+            </p>
+        </div>
     </div>
 
     <script>
-        if (localStorage.getItem('isLoggedIn')) {
-            window.location.href = 'index.html';
+        let isLoginForm = true;
+
+        function toggleForm() {
+            isLoginForm = !isLoginForm;
+            document.getElementById('authTitle').textContent = isLoginForm ? 'Welcome to TeamZ' : 'Create Account';
+            document.querySelector('.auth-button').innerHTML = isLoginForm ? 
+                '<i class="fas fa-sign-in-alt"></i> Sign In' : 
+                '<i class="fas fa-user-plus"></i> Sign Up';
+            document.querySelector('p').innerHTML = isLoginForm ?
+                'Don\'t have an account? <a href="#" onclick="toggleForm()" style="color: #4CAF50">Sign Up</a>' :
+                'Already have an account? <a href="#" onclick="toggleForm()" style="color: #4CAF50">Sign In</a>';
         }
 
-        async function handleLogin(event) {
-            event.preventDefault();
+        async function handleLogin() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const endpoint = isLoginForm ? '/api/login' : '/api/signup';
 
             try {
-                const response = await fetch('/api/login', {
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -129,36 +136,32 @@
                 const data = await response.json();
                 
                 if (response.ok) {
+                    showSuccess(data.message);
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userEmail', email);
-                    window.location.href = 'index.html';
+                    setTimeout(() => window.location.href = 'index.html', 1500);
                 } else {
                     showError(data.error);
                 }
             } catch (error) {
-                showError('Login failed. Please try again.');
+                showError('Operation failed. Please try again.');
             }
         }
 
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
         }
 
-        function handleGoogleLogin() {
-            // Implement Google OAuth login
-            alert('Google login will be implemented');
-        }
-
-        function handleGithubLogin() {
-            // Implement GitHub OAuth login
-            alert('GitHub login will be implemented');
-        }
-
-        function showSignup() {
-            // Implement signup logic
-            alert('Signup will be implemented');
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
         }
     </script>
 </body>

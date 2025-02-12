@@ -5,24 +5,68 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask_mail import Mail, Message
 import json
 import os
+import hashlib
+import secrets
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key'  # Change this to a secure secret key
+app.secret_key = secrets.token_hex(16)
+
+# User storage
+USERS_FILE = 'users.json'
+
+def load_users():
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_users(users):
+    with open(USERS_FILE, 'w') as f:
+        json.dump(users, f)
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
+
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+    
+    users = load_users()
+    if email in users:
+        return jsonify({'error': 'Email already registered'}), 400
+        
+    users[email] = hash_password(password)
+    save_users(users)
+    
+    try:
+        msg = Message('Welcome to TeamZ!',
+                     sender=app.config['MAIL_USERNAME'],
+                     recipients=[email])
+        msg.body = f"Welcome to TeamZ!\nThank you for registering with email: {email}"
+        mail.send(msg)
+        
+        session['user_email'] = email
+        return jsonify({'message': 'Registration successful'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
     email = data.get('email')
     password = data.get('password')
-
-    # Here you would typically validate against a database
-    # For demo, we'll accept any login and send notification
     
+    users = load_users()
+    if email not in users or users[email] != hash_password(password):
+        return jsonify({'error': 'Invalid email or password'}), 401
+        
     try:
         msg = Message('New Login Alert',
-                     sender='your-email@gmail.com',
+                     sender=app.config['MAIL_USERNAME'],
                      recipients=['nitya20005@gmail.com'])
         msg.body = f"New login detected\nEmail: {email}"
         mail.send(msg)
