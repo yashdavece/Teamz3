@@ -1,4 +1,4 @@
-modules = ["web"]
+modules = ["python-3.11", "web"]
 run = "run"
 
 [nix]
@@ -17,3 +17,7 @@ author = 39593368
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python server.py"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
