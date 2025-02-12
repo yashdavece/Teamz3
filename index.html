@@ -163,6 +163,59 @@
                 font-size: 1rem;
             }
         }
+
+        .auth-container {
+            background: rgba(0,0,0,0.8);
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .auth-button {
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border: none;
+            border-radius: 0.5rem;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 1rem;
+        }
+
+        .input-group {
+            margin: 1rem 0;
+            text-align: left;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            margin-top: 0.5rem;
+        }
+
+        .error-message {
+            color: #ff4444;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #4CAF50;
+            margin-top: 0.5rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -180,9 +233,32 @@
     </header>
 
     <div class="hero-section">
-        <div id="welcomeMessage" class="hero-text">Welcome to TeamZ</div>
-        <div class="hero-subtext">The Ultimate Platform for Team Collaboration and Productivity</div>
-        <a href="about.html" class="cta-button">Learn More</a>
+        <div id="loginSection" style="display: block;">
+            <div class="auth-container">
+                <h2 id="authTitle">Welcome to TeamZ</h2>
+                <div id="loginForm">
+                    <div class="input-group">
+                        <input type="email" id="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="password" required placeholder="Enter your password">
+                    </div>
+                    <div id="errorMessage" class="error-message"></div>
+                    <div id="successMessage" class="success-message"></div>
+                    <button onclick="handleLogin()" class="auth-button">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                    <p style="margin-top: 1rem; color: #fff;">
+                        Don't have an account? <a href="#" onclick="toggleForm()" style="color: #4CAF50">Sign Up</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div id="welcomeSection" style="display: none;">
+            <div id="welcomeMessage" class="hero-text">Welcome to TeamZ</div>
+            <div class="hero-subtext">The Ultimate Platform for Team Collaboration and Productivity</div>
+            <a href="about.html" class="cta-button">Learn More</a>
+        </div>
     </div>
 
     <div class="container">
@@ -191,11 +267,73 @@
         <p class="description">TeamZ is an innovative platform designed specifically for team collaboration and productivity. It offers a range of features tailored to streamline team dynamics and enhance workflow efficiency. One of the standout features is the real-time chat functionality, allowing team members to communicate instantly. Additionally, TeamZ provides a convenient way for team members to upload their work, ensuring that all project files and documents are centralized. The team discussion feature simulates a real office environment, bridging the gap between remote and in-office teams.</p>
     </div>
     <script>
+        let isLoginForm = true;
+
+        function toggleForm() {
+            isLoginForm = !isLoginForm;
+            document.getElementById('authTitle').textContent = isLoginForm ? 'Welcome to TeamZ' : 'Create Account';
+            document.querySelector('.auth-button').innerHTML = isLoginForm ? 
+                '<i class="fas fa-sign-in-alt"></i> Sign In' : 
+                '<i class="fas fa-user-plus"></i> Sign Up';
+            document.querySelector('.auth-container p').innerHTML = isLoginForm ?
+                'Don\'t have an account? <a href="#" onclick="toggleForm()" style="color: #4CAF50">Sign Up</a>' :
+                'Already have an account? <a href="#" onclick="toggleForm()" style="color: #4CAF50">Sign In</a>';
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const endpoint = isLoginForm ? '/api/login' : '/api/signup';
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess(data.message);
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', email);
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('welcomeSection').style.display = 'block';
+                    document.getElementById('welcomeMessage').textContent = `Welcome back, ${email}`;
+                } else {
+                    showError(data.error);
+                }
+            } catch (error) {
+                showError('Operation failed. Please try again.');
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const isLoggedIn = localStorage.getItem('isLoggedIn');
             const userEmail = localStorage.getItem('userEmail');
 
             if (isLoggedIn && userEmail) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('welcomeSection').style.display = 'block';
                 document.getElementById('welcomeMessage').textContent = `Welcome back, ${userEmail}`;
             }
         });
