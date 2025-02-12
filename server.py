@@ -1,13 +1,46 @@
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, session
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_mail import Mail, Message
 import json
 import os
 
 app = Flask(__name__)
+app.secret_key = 'your-secret-key'  # Change this to a secure secret key
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    # Here you would typically validate against a database
+    # For demo, we'll accept any login and send notification
+    
+    try:
+        msg = Message('New Login Alert',
+                     sender='your-email@gmail.com',
+                     recipients=['nitya20005@gmail.com'])
+        msg.body = f"New login detected\nEmail: {email}"
+        mail.send(msg)
+        
+        session['user_email'] = email
+        return jsonify({'message': 'Login successful'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
+# Mail configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'your-email@gmail.com'  # Set your Gmail
+app.config['MAIL_PASSWORD'] = 'your-app-password'  # Set your Gmail app password
+mail = Mail(app)
 
 # File storage
 TEAMS_FILE = 'teams.json'

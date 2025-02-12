@@ -7,7 +7,6 @@
     <title>Login - TeamZ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://auth.util.repl.co/script.js"></script>
     <style>
         * {
             margin: 0;
@@ -51,6 +50,10 @@
             font-size: 1rem;
         }
 
+        .auth-button:hover {
+            opacity: 0.9;
+        }
+
         .auth-button.google { background: #DB4437; }
         .auth-button.github { background: #333; }
 
@@ -68,31 +71,95 @@
             color: white;
             margin-top: 0.5rem;
         }
+
+        .error-message {
+            color: #ff4444;
+            margin-top: 0.5rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="auth-container">
         <h2>Welcome to TeamZ</h2>
-        <div class="input-group">
-            <label>Email</label>
-            <input type="email" id="email" placeholder="Enter your email">
-        </div>
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="password" placeholder="Enter your password">
-        </div>
-        <button class="auth-button">
-            <i class="fas fa-sign-in-alt"></i> Sign In
-        </button>
-        <button class="auth-button google">
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="email" required placeholder="Enter your email">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" required placeholder="Enter your password">
+            </div>
+            <div id="errorMessage" class="error-message"></div>
+            <button type="submit" class="auth-button">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+        </form>
+        <button onclick="handleGoogleLogin()" class="auth-button google">
             <i class="fab fa-google"></i> Continue with Google
         </button>
-        <button class="auth-button github">
+        <button onclick="handleGithubLogin()" class="auth-button github">
             <i class="fab fa-github"></i> Continue with GitHub
         </button>
         <p style="margin-top: 1rem">
-            Don't have an account? <a href="#" style="color: #4CAF50">Sign Up</a>
+            Don't have an account? <a href="#" onclick="showSignup()" style="color: #4CAF50">Sign Up</a>
         </p>
     </div>
+
+    <script>
+        if (localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'index.html';
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', email);
+                    window.location.href = 'index.html';
+                } else {
+                    showError(data.error);
+                }
+            } catch (error) {
+                showError('Login failed. Please try again.');
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function handleGoogleLogin() {
+            // Implement Google OAuth login
+            alert('Google login will be implemented');
+        }
+
+        function handleGithubLogin() {
+            // Implement GitHub OAuth login
+            alert('GitHub login will be implemented');
+        }
+
+        function showSignup() {
+            // Implement signup logic
+            alert('Signup will be implemented');
+        }
+    </script>
 </body>
 </html>
