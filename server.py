@@ -1,5 +1,5 @@
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import json
 import os
@@ -20,6 +20,14 @@ def load_data(filename):
 def save_data(data, filename):
     with open(filename, 'w') as f:
         json.dump(data, f)
+
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('.', path)
 
 @app.route('/api/teams', methods=['POST'])
 def create_team():
