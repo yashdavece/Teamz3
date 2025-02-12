@@ -161,11 +161,7 @@
     </div>
 
     <script>
-        // Check login status
-        if (!localStorage.getItem('isLoggedIn')) {
-            document.getElementById('loginAlert').style.display = 'block';
-            document.querySelector('.form-container').style.display = 'none';
-        }
+        
 
         async function joinTeam() {
             const teamCode = document.getElementById('teamCode').value;
