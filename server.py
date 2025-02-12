@@ -36,7 +36,14 @@ def serve_static(path):
 @app.route('/api/teams', methods=['POST'])
 def create_team():
     teams = load_data(TEAMS_FILE)
+    members = load_data(MEMBERS_FILE)
     data = request.json
+    
+    # Check if username exists in any team
+    for team_members in members.values():
+        if data['username'] in team_members:
+            return jsonify({'error': 'Username already exists. Please choose a different username.'}), 400
+    
     team_code = f"TEAM{len(teams) + 1}"
     teams[team_code] = {
         'name': data['teamName'],

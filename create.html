@@ -246,6 +246,11 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="username">Your Username (Team Leader)</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                    <div id="username-error" style="color: #ff6b6b; display: none; margin-top: 5px;"></div>
+                </div>
+                <div class="form-group">
                     <label for="teamLogo">Upload Team Logo</label>
                     <input type="file" id="teamLogo" name="teamLogo" accept="image/*">
                     <img id="logoPreview" class="team-image-preview" style="display: none;" alt="Team Logo Preview">
@@ -273,8 +278,14 @@
 
         async function handleSubmit(event) {
             event.preventDefault();
-            const username = prompt('Enter your username (as team leader):');
-            if (!username) return;
+            const username = document.getElementById('username').value;
+            const errorDiv = document.getElementById('username-error');
+            
+            if (!username) {
+                errorDiv.textContent = 'Username is required';
+                errorDiv.style.display = 'block';
+                return;
+            }
             
             const formData = {
                 teamName: document.getElementById('teamName').value,
