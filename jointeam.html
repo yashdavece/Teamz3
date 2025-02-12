@@ -149,6 +149,9 @@
     </header>
 
     <div class="container">
+        <div id="loginAlert" style="display: none; background-color: rgba(255, 0, 0, 0.8); color: white; text-align: center; padding: 1rem; position: fixed; top: 80px; left: 50%; transform: translateX(-50%); border-radius: 8px; z-index: 1000;">
+            Please log in before joining a team. <a href="login.html" style="color: white; text-decoration: underline;">Login here</a>
+        </div>
         <hr>
         <div class="form-container">
             <h2>Join a Team</h2>
@@ -160,6 +163,12 @@
     </div>
 
     <script>
+        // Check login status
+        if (!localStorage.getItem('isLoggedIn')) {
+            document.getElementById('loginAlert').style.display = 'block';
+            document.querySelector('.form-container').style.display = 'none';
+        }
+
         async function joinTeam() {
             const teamCode = document.getElementById('teamCode').value;
             const username = document.getElementById('username').value;

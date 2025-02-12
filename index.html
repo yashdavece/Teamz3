@@ -173,15 +173,14 @@
         </div>
         <nav>
             <a href="#home" class="nav-button">Home</a>
-            <a href="create.html" class="nav-button">Create Your Team</a>
-            
-            <a href="jointeam.html" class="nav-button">join a team </a>
+            <a href="create.html" class="nav-button" onclick="checkLogin('create.html')">Create Your Team</a>
+            <a href="jointeam.html" class="nav-button" onclick="checkLogin('jointeam.html')">Join a Team</a>
             <a href="about.html" class="nav-button">About</a>
         </nav>
     </header>
 
     <div class="hero-section">
-        <div class="hero-text">Welcome to TeamZ</div>
+        <div id="welcomeMessage" class="hero-text">Welcome to TeamZ</div>
         <div class="hero-subtext">The Ultimate Platform for Team Collaboration and Productivity</div>
         <a href="about.html" class="cta-button">Learn More</a>
     </div>
@@ -191,5 +190,24 @@
         <h2 class="section-heading">What is TeamZ Platform?</h2>
         <p class="description">TeamZ is an innovative platform designed specifically for team collaboration and productivity. It offers a range of features tailored to streamline team dynamics and enhance workflow efficiency. One of the standout features is the real-time chat functionality, allowing team members to communicate instantly. Additionally, TeamZ provides a convenient way for team members to upload their work, ensuring that all project files and documents are centralized. The team discussion feature simulates a real office environment, bridging the gap between remote and in-office teams.</p>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userEmail = localStorage.getItem('userEmail');
+
+            if (isLoggedIn && userEmail) {
+                document.getElementById('welcomeMessage').textContent = `Welcome back, ${userEmail}`;
+            }
+        });
+
+        function checkLogin(page) {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                alert('Please log in before creating or joining a team.');
+            } else {
+                window.location.href = page;
+            }
+        }
+    </script>
 </body>
 </html>
