@@ -88,11 +88,13 @@
             padding: 0 20px;
         }
 
-        .hero-text {
-            font-size: 3rem;
-            font-weight: 600;
+        #welcomeMessage {
+            font-size: 4.5rem;
+            font-weight: 800;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+            text-transform: uppercase;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
         }
 
         .hero-subtext {
@@ -150,7 +152,7 @@
                 font-size: 2rem;
             }
 
-            .hero-text {
+            #welcomeMessage {
                 font-size: 2.5rem;
             }
 
@@ -295,7 +297,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     showSuccess(data.message);
                     localStorage.setItem('isLoggedIn', 'true');
