@@ -74,4 +74,4 @@ def handle_material(data):
     emit('material', data, room=room)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host='0.0.0.0', port=3000)
+    socketio.run(app, host='0.0.0.0', port=3000, allow_unsafe_werkzeug=True)
