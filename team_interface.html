@@ -277,10 +277,21 @@
             const input = document.getElementById('message-input');
             const message = input.value.trim();
             if (message) {
-                socket.emit('message', { team: teamCode, username: username, message: message });
+                socket.emit('message', { 
+                    team: teamCode, 
+                    username: username, 
+                    message: message 
+                });
                 input.value = '';
             }
         }
+
+        // Add event listener for Enter key
+        document.getElementById('message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
 
         socket.on('message', data => {
             const messagesDiv = document.getElementById('chat-messages');
