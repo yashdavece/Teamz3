@@ -59,8 +59,9 @@ def handle_join(data):
 
 @socketio.on('message')
 def handle_message(data):
+    print(f"Message received: {data}")
     room = data['team']
-    emit('message', {'username': data['username'], 'message': data['message']}, room=room, broadcast=True)
+    emit('message', {'username': data['username'], 'message': data['message']}, to=room)
 
 @socketio.on('discussion')
 def handle_discussion(data):

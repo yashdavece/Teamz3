@@ -251,9 +251,18 @@
     </div>
 
     <script>
-        const socket = io('http://' + window.location.hostname + ':3000');
+        const socket = io();
         const teamCode = new URLSearchParams(window.location.search).get('team');
         let username = localStorage.getItem('username');
+        
+        // Add connection status handling
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+        
+        socket.on('connect_error', (error) => {
+            console.error('Connection error:', error);
+        });
 
         if (!teamCode) {
             window.location.href = 'index.html';
