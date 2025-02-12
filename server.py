@@ -1,15 +1,19 @@
 
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit, join_room, leave_room
 import json
 import os
 
 app = Flask(__name__)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Simple file-based storage
+# File storage
 TEAMS_FILE = 'teams.json'
 MEMBERS_FILE = 'members.json'
+MATERIALS_FILE = 'materials.json'
+DISCUSSIONS_FILE = 'discussions.json'
 
 def load_data(filename):
     if os.path.exists(filename):
@@ -70,5 +74,44 @@ def get_team(team_code):
     team_data['members'] = members.get(team_code, [])
     return jsonify(team_data)
 
+@socketio.on('join')
+def on_join(data):
+    room = data['team']
+    join_room(room)
+    emit('message', {'username': 'System', 'message': f"{data['username']} has joined the team"}, room=room)
+
+@socketio.on('message')
+def on_message(data):
+    room = data['team']
+    emit('message', {'username': data['username'], 'message': data['message']}, room=room)
+
+@socketio.on('discussion')
+def on_discussion(data):
+    room = data['team']
+    discussions = load_data(DISCUSSIONS_FILE)
+    if room not in discussions:
+        discussions[room] = []
+    discussions[room].append({
+        'username': data['username'],
+        'topic': data['topic'],
+        'content': data['content']
+    })
+    save_data(discussions, DISCUSSIONS_FILE)
+    emit('discussion', data, room=room)
+
+@socketio.on('material')
+def on_material(data):
+    room = data['team']
+    materials = load_data(MATERIALS_FILE)
+    if room not in materials:
+        materials[room] = []
+    materials[room].append({
+        'username': data['username'],
+        'title': data['title'],
+        'url': data['url']
+    })
+    save_data(materials, MATERIALS_FILE)
+    emit('material', data, room=room)
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000)
+    socketio.run(app, host='0.0.0.0', port=3000)
