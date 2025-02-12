@@ -235,27 +235,14 @@
     </header>
 
     <div class="hero-section">
-        <div id="loginSection" style="display: block;">
-            <div class="auth-container">
-                <h1 id="authTitle">Welcome to TeamZ</h1>
-                <div id="loginForm">
-                    <div class="input-group">
-                        <input type="email" id="email" required placeholder="Enter your email">
-                    </div>
-                    <div class="input-group">
-                        <input type="password" id="password" required placeholder="Enter your password">
-                    </div>
-                    <div id="errorMessage" class="error-message"></div>
-                    <div id="successMessage" class="success-message"></div>
-                    <button onclick="handleLogin()" class="auth-button">
-                        <i class="fas fa-sign-in-alt"></i> Sign In
-                    </button>
-                    <p style="margin-top: 1rem; color: #fff;">
-                        Don't have an account? <a href="#" onclick="toggleForm()" style="color: #4CAF50">Sign Up</a>
-                    </p>
-                </div>
-            </div>
+        <div class="welcome-section">
+        <h1>Welcome to TeamZ</h1>
+        <p>The Ultimate Platform for Team Collaboration</p>
+        <div class="cta-buttons">
+            <a href="create.html" class="cta-button">Create Team</a>
+            <a href="jointeam.html" class="cta-button">Join Team</a>
         </div>
+    </div>
         <div id="welcomeSection" style="display: none;">
             <div id="welcomeMessage" class="hero-text">Welcome to TeamZ</div>
             <div class="hero-subtext">The Ultimate Platform for Team Collaboration and Productivity</div>
