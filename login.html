@@ -59,7 +59,7 @@
             text-align: left;
         }
 
-        input {
+        input, select {
             width: 100%;
             padding: 0.8rem;
             border: none;
@@ -67,6 +67,15 @@
             background: rgba(255,255,255,0.1);
             color: white;
             margin-top: 0.5rem;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: #333;
+            color: white;
         }
 
         .error-message {
@@ -87,50 +96,50 @@
         <h2 id="authTitle">Welcome to TeamZ</h2>
         <div id="loginForm">
             <div class="input-group">
-                <label>Email</label>
-                <input type="email" id="email" required placeholder="Enter your email">
+                <label>First Name</label>
+                <input type="text" id="firstName" required placeholder="Enter your first name">
             </div>
             <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="password" required placeholder="Enter your password">
+                <label>Last Name</label>
+                <input type="text" id="lastName" required placeholder="Enter your last name">
+            </div>
+            <div class="input-group">
+                <label>Role</label>
+                <select id="role" required>
+                    <option value="" disabled selected>Select your role</option>
+                    <option value="developer">Developer</option>
+                    <option value="designer">Designer</option>
+                    <option value="manager">Project Manager</option>
+                    <option value="analyst">Business Analyst</option>
+                    <option value="tester">QA Tester</option>
+                </select>
             </div>
             <div id="errorMessage" class="error-message"></div>
             <div id="successMessage" class="success-message"></div>
             <button onclick="handleLogin()" class="auth-button">
-                <i class="fas fa-sign-in-alt"></i> Sign In
+                <i class="fas fa-sign-in-alt"></i> Continue
             </button>
-            <p style="margin-top: 1rem">
-                Don't have an account? <a href="#" onclick="toggleForm()" style="color: #4CAF50">Sign Up</a>
-            </p>
         </div>
     </div>
 
     <script>
-        let isLoginForm = true;
-
-        function toggleForm() {
-            isLoginForm = !isLoginForm;
-            document.getElementById('authTitle').textContent = isLoginForm ? 'Welcome to TeamZ' : 'Create Account';
-            document.querySelector('.auth-button').innerHTML = isLoginForm ? 
-                '<i class="fas fa-sign-in-alt"></i> Sign In' : 
-                '<i class="fas fa-user-plus"></i> Sign Up';
-            document.querySelector('p').innerHTML = isLoginForm ?
-                'Don\'t have an account? <a href="#" onclick="toggleForm()" style="color: #4CAF50">Sign Up</a>' :
-                'Already have an account? <a href="#" onclick="toggleForm()" style="color: #4CAF50">Sign In</a>';
-        }
-
         async function handleLogin() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const endpoint = isLoginForm ? '/api/login' : '/api/signup';
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const role = document.getElementById('role').value;
+
+            if (!firstName || !lastName || !role) {
+                showError('Please fill in all fields');
+                return;
+            }
 
             try {
-                const response = await fetch(endpoint, {
+                const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ firstName, lastName, role })
                 });
 
                 const data = await response.json();
@@ -138,7 +147,7 @@
                 if (response.ok) {
                     showSuccess(data.message);
                     localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userInfo', JSON.stringify({ firstName, lastName, role }));
                     setTimeout(() => window.location.href = 'index.html', 1500);
                 } else {
                     showError(data.error);

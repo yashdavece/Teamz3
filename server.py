@@ -24,57 +24,30 @@ def save_users(users):
     with open(USERS_FILE, 'w') as f:
         json.dump(users, f)
 
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
-
-@app.route('/api/signup', methods=['POST'])
-def signup():
-    data = request.json
-    email = data.get('email')
-    password = data.get('password')
-    
-    users = load_users()
-    if email in users:
-        return jsonify({'error': 'Email already registered'}), 400
-        
-    users[email] = hash_password(password)
-    save_users(users)
-    
-    try:
-        msg = Message('Welcome to TeamZ!',
-                     sender=app.config['MAIL_USERNAME'],
-                     recipients=[email])
-        msg.body = f"Welcome to TeamZ!\nThank you for registering with email: {email}"
-        mail.send(msg)
-        
-        session['user_email'] = email
-        return jsonify({'message': 'Registration successful'})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
-    email = data.get('email')
-    password = data.get('password')
+    first_name = data.get('firstName')
+    last_name = data.get('lastName')
+    role = data.get('role')
     
+    if not all([first_name, last_name, role]):
+        return jsonify({'error': 'All fields are required'}), 400
+    
+    user_id = f"{first_name.lower()}_{last_name.lower()}"
     users = load_users()
-    if email not in users or users[email] != hash_password(password):
-        return jsonify({'error': 'Invalid email or password'}), 401
-        
-    try:
-        msg = Message('New Login Alert',
-                     sender=app.config['MAIL_USERNAME'],
-                     recipients=['nitya20005@gmail.com'])
-        msg.body = f"New login detected\nEmail: {email}"
-        mail.send(msg)
-        
-        session['user_email'] = email
-        return jsonify({'message': 'Login successful'})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    users[user_id] = {
+        'firstName': first_name,
+        'lastName': last_name,
+        'role': role
+    }
+    save_users(users)
+    
+    session['user_id'] = user_id
+    return jsonify({'message': 'Login successful'})
 
 
 
