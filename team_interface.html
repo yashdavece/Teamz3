@@ -251,7 +251,7 @@
     </div>
 
     <script>
-        const socket = io();
+        const socket = io('http://' + window.location.hostname + ':3000');
         const teamCode = new URLSearchParams(window.location.search).get('team');
         let username = localStorage.getItem('username');
 

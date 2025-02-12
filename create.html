@@ -347,15 +347,30 @@
                 description: teamDescription,
                 category: teamCategory,
                 leader: username,
-                code: teamCode
+                code: teamCode,
+                members: [username]
             };
 
-            // Save to localStorage for demo
-            localStorage.setItem('username', username);
-            localStorage.setItem(`team_${teamCode}`, JSON.stringify(teamData));
-            
-            // Redirect to team interface
-            window.location.href = `team_interface.html?team=${teamCode}`;
+            try {
+                const response = await fetch('/api/teams', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(teamData)
+                });
+
+                if (response.ok) {
+                    localStorage.setItem('username', username);
+                    window.location.href = `team_interface.html?team=${teamCode}`;
+                } else {
+                    throw new Error('Failed to create team');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('username-error').textContent = 'Error creating team';
+                document.getElementById('username-error').style.display = 'block';
+            }
         }
 
         document.getElementById('teamForm').addEventListener('submit', handleSubmit);
