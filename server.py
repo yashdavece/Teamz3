@@ -13,6 +13,23 @@ def index():
 @app.route('/api/teams', methods=['POST'])
 def create_team():
     data = request.json
+    team_code = data.get('code')
+    
+    if not team_code:
+        return jsonify({"success": False, "error": "Team code is required"}), 400
+
+    # Load existing teams
+    if os.path.exists('teams.json'):
+        with open('teams.json', 'r') as file:
+            teams = json.load(file)
+    else:
+        teams = {}
+
+    # Save new team
+    teams[team_code] = data
+    with open('teams.json', 'w') as file:
+        json.dump(teams, file)
+
     return jsonify({"success": True, "data": data})
 
 @socketio.on('connect')
